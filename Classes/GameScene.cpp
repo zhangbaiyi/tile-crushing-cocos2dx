@@ -35,11 +35,6 @@ bool GameScene::init()
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
-	auto touchListener = EventListenerTouchOneByOne::create();
-	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
-	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
-	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
-
 	initMap();
 	scheduleUpdate();
 
@@ -84,30 +79,4 @@ void GameScene::checkSprite()
 			for (int pos = col + (ROWS - emptyRow[col]) * COLS; pos < MAP_SIZE; pos += COLS)
 				createSprite(pos);
 	}
-}
-
-
-bool GameScene::onTouchBegan(Touch *touch, Event *unused)
-{
-	staPosition = -1;
-
-	if (map.canTouch()) 
-	{
-		auto location = touch->getLocation();
-		staPosition = map.spriteOfPoint(&location);
-	}
-	return map.canTouch();
-}
-
-void GameScene::onTouchMoved(Touch *touch, Event *unused) 
-{
-	if (staPosition < 0 || !map.canTouch())
-		return;
-
-	int row = staPosition / COLS;
-	int col = staPosition % COLS;
-
-	auto location = touch->getLocation();
-	auto endPosition = map.spriteOfPoint(&location);
-	map.swap(staPosition, endPosition);
 }

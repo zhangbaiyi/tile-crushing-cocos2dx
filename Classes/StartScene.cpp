@@ -34,6 +34,5 @@ bool StartScene::init()
 	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
-
 	return true;
 }

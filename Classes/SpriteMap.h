@@ -18,14 +18,10 @@ public:
 	void remove(int pos);
 	cocos2d::Point positionOfItem(int pos);
 	bool actionJudge();
-	unsigned long long eliminateMap();
 	bool check();
 	void eliminate(unsigned long long);
 	void explode(EliminateSprite*);
 	std::vector<int> fill();
-	bool canTouch();
-	int spriteOfPoint(cocos2d::Point* point);
-	void swap(int, int);
 };
 
 #endif
