@@ -144,7 +144,6 @@ void SpriteMap::swap(int staPosition, int endPosition)
 	if (dis != 1 && dis != 8)
 		return;
 
-	isAction = true;
 	float time = 0.2;
 	auto staPtr = map[staPosition];
 	auto endPtr = map[endPosition];
@@ -167,8 +166,8 @@ void SpriteMap::swap(int staPosition, int endPosition)
 		remove(endPosition);
 		add(staPosition, staPtr);
 		add(endPosition, endPtr);
-		staPtr->runAction(cocos2d::Sequence::create(toEnd->clone(), toSta->clone(), nullptr));
-		endPtr->runAction(cocos2d::Sequence::create(toSta->clone(), toEnd->clone(), nullptr));
+		staPtr->runAction(toEnd->clone());
+		endPtr->runAction(toSta->clone());
 	}
 }
 
