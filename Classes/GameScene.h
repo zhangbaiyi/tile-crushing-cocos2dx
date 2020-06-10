@@ -33,9 +33,7 @@ private:
 	
 	SpriteMap map;
 
-	EliminateSprite* staSprite;
-
-	EliminateSprite* endSprite;
+	int staPosition = -1;
 };
 
 #endif
