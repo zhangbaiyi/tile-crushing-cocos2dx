@@ -1,4 +1,10 @@
 #include "SpriteMap.h"
+#include "GameDefine.h"
+#include "GameArg.h"
+#include "cocos2d.h"
+
+
+
 
 void SpriteMap::add(int pos, EliminateSprite* ptr)
 {
@@ -28,7 +34,7 @@ bool SpriteMap::actionJudge()
 bool SpriteMap::check()
 {
 	unsigned long long needEliminate = eliminateMap();
-	
+
 	if (needEliminate)
 	{
 		eliminate(needEliminate);
@@ -41,6 +47,7 @@ bool SpriteMap::check()
 void SpriteMap::eliminate(unsigned long long need)
 {
 	isAction = true;
+	int combo = 1;
 	while (need)
 	{
 		int pos = msb(need);
@@ -48,8 +55,13 @@ void SpriteMap::eliminate(unsigned long long need)
 		EliminateSprite* p = map[pos];
 		remove(pos);
 		explode(p);
+		combo++;
+		total_score += 10 * combo;
+		
 	}
 }
+
+
 
 void SpriteMap::explode(EliminateSprite* p)
 {
@@ -57,6 +69,7 @@ void SpriteMap::explode(EliminateSprite* p)
 		cocos2d::ScaleTo::create(0.2f, 0.0),
 		cocos2d::CallFunc::create(CC_CALLBACK_0(cocos2d::Sprite::removeFromParent, p)),
 		NULL));
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.wav");
 }
 
 std::vector<int> SpriteMap::fill()
@@ -79,13 +92,14 @@ std::vector<int> SpriteMap::fill()
 				float speed = (p->getPosition().y - endPosition.y) / GAME_SCREEN_HEIGHT * 3;
 				p->stopAllActions();
 				p->runAction(cocos2d::MoveTo::create(speed, endPosition));
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.wav");
 			}
 		}
 
 	return emptyRow;
 }
 
-int SpriteMap::msb(unsigned long long arg) 
+int SpriteMap::msb(unsigned long long arg)
 {
 	int retval = 0;
 	if (arg & 0xffffffff00000000) { retval += 32; arg &= 0xffffffff00000000; }
@@ -134,6 +148,8 @@ int  SpriteMap::spriteOfPoint(cocos2d::Point* point)
 	return -1;
 }
 
+
+
 void SpriteMap::swap(int staPosition, int endPosition)
 {
 	if (staPosition < 0 || endPosition < 0)
@@ -143,8 +159,8 @@ void SpriteMap::swap(int staPosition, int endPosition)
 
 	if (dis != 1 && dis != 8)
 		return;
-
 	isAction = true;
+
 	float time = 0.2;
 	auto staPtr = map[staPosition];
 	auto endPtr = map[endPosition];
@@ -160,6 +176,7 @@ void SpriteMap::swap(int staPosition, int endPosition)
 	{
 		staPtr->runAction(toEnd->clone());
 		endPtr->runAction(toSta->clone());
+
 	}
 	else
 	{
