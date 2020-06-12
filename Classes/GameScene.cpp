@@ -1,6 +1,7 @@
 #include "GameScene.h"
 #include "PauseScene.h"
 #include "EliminateSprite.h"
+#include "GameDefine.h"
 
 USING_NS_CC;
 
@@ -14,15 +15,15 @@ bool GameScene::init()
 	if (!Scene::init())
 		return false;
 
-	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icon.plist");
-	spriteSheet = SpriteBatchNode::create("icon.png");
+	SpriteFrameCache::getInstance()->addSpriteFramesWithFile("icons.plist");
+	spriteSheet = SpriteBatchNode::create("icons.png");
 	addChild(spriteSheet, 0);
 
-	auto sprite = Sprite::create("scene_bg.png");
+	auto sprite = Sprite::create("background_gamescene.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
 	this->addChild(sprite, -1);
 
-	auto pauseItem = MenuItemImage::create("btn_back01.png", "btn_back02.png",
+	auto pauseItem = MenuItemImage::create("buttons/pause.png", "buttons/pause_clicked.png",
 		[&](Ref* sender)
 	{
 		auto scene = PauseScene::createScene();
@@ -34,6 +35,14 @@ bool GameScene::init()
 	auto menu = Menu::create(pauseItem, NULL);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
+
+	auto touchListener = EventListenerTouchOneByOne::create();
+	touchListener->onTouchBegan = CC_CALLBACK_2(GameScene::onTouchBegan, this);
+	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
+	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
+
+	auto labelScore = Score::create();
+	this->addChild(labelScore);
 
 	initMap();
 	scheduleUpdate();
@@ -79,4 +88,30 @@ void GameScene::checkSprite()
 			for (int pos = col + (ROWS - emptyRow[col]) * COLS; pos < MAP_SIZE; pos += COLS)
 				createSprite(pos);
 	}
+}
+
+
+bool GameScene::onTouchBegan(Touch *touch, Event *unused)
+{
+	staPosition = -1;
+
+	if (map.canTouch()) 
+	{
+		auto location = touch->getLocation();
+		staPosition = map.spriteOfPoint(&location);
+	}
+	return map.canTouch();
+}
+
+void GameScene::onTouchMoved(Touch *touch, Event *unused) 
+{
+	if (staPosition < 0 || !map.canTouch())
+		return;
+
+	int row = staPosition / COLS;
+	int col = staPosition % COLS;
+
+	auto location = touch->getLocation();
+	auto endPosition = map.spriteOfPoint(&location);
+	map.swap(staPosition, endPosition);
 }

@@ -1,4 +1,10 @@
 #include "SpriteMap.h"
+#include "GameDefine.h"
+#include "GameArg.h"
+#include "cocos2d.h"
+
+
+
 
 void SpriteMap::add(int pos, EliminateSprite* ptr)
 {
@@ -27,23 +33,8 @@ bool SpriteMap::actionJudge()
 
 bool SpriteMap::check()
 {
-	unsigned long long needEliminate = 0ULL;
-	for (auto i : normalMap)
-	{
-		unsigned long long tmp = i;
-		tmp &= tmp << COLS;
-		tmp &= tmp >> COLS;
-		tmp |= tmp << COLS;
-		tmp |= tmp >> COLS;
-		needEliminate |= tmp;
+	unsigned long long needEliminate = eliminateMap();
 
-		tmp = i;
-		tmp &= (tmp << 1) & 0xfefefefefefefefe;
-		tmp &= (tmp >> 1) & 0x7f7f7f7f7f7f7f7f;
-		tmp |= tmp << 1;
-		tmp |= tmp >> 1;
-		needEliminate |= tmp;
-	}
 	if (needEliminate)
 	{
 		eliminate(needEliminate);
@@ -56,6 +47,7 @@ bool SpriteMap::check()
 void SpriteMap::eliminate(unsigned long long need)
 {
 	isAction = true;
+	int combo = 1;
 	while (need)
 	{
 		int pos = msb(need);
@@ -63,8 +55,13 @@ void SpriteMap::eliminate(unsigned long long need)
 		EliminateSprite* p = map[pos];
 		remove(pos);
 		explode(p);
+		combo++;
+		total_score += 10 * combo;
+		
 	}
 }
+
+
 
 void SpriteMap::explode(EliminateSprite* p)
 {
@@ -72,6 +69,7 @@ void SpriteMap::explode(EliminateSprite* p)
 		cocos2d::ScaleTo::create(0.2f, 0.0),
 		cocos2d::CallFunc::create(CC_CALLBACK_0(cocos2d::Sprite::removeFromParent, p)),
 		NULL));
+	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.wav");
 }
 
 std::vector<int> SpriteMap::fill()
@@ -94,13 +92,14 @@ std::vector<int> SpriteMap::fill()
 				float speed = (p->getPosition().y - endPosition.y) / GAME_SCREEN_HEIGHT * 3;
 				p->stopAllActions();
 				p->runAction(cocos2d::MoveTo::create(speed, endPosition));
+				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.wav");
 			}
 		}
 
 	return emptyRow;
 }
 
-int SpriteMap::msb(unsigned long long arg) 
+int SpriteMap::msb(unsigned long long arg)
 {
 	int retval = 0;
 	if (arg & 0xffffffff00000000) { retval += 32; arg &= 0xffffffff00000000; }
@@ -119,4 +118,95 @@ cocos2d::Point SpriteMap::positionOfItem(int pos)
 	float x = mapLBX + (SPRITE_WIDTH + BOADER_WIDTH) * col + SPRITE_WIDTH / 2;
 	float y = mapLBY + (SPRITE_WIDTH + BOADER_WIDTH) * row + SPRITE_WIDTH / 2;
 	return cocos2d::Point(x, y);
+}
+
+bool SpriteMap::canTouch()
+{
+	return !isAction;
+}
+
+int  SpriteMap::spriteOfPoint(cocos2d::Point* point)
+{
+	cocos2d::Rect rect = cocos2d::Rect(0, 0, 0, 0);
+	cocos2d::Size sz;
+	sz.height = SPRITE_WIDTH;
+	sz.width = SPRITE_WIDTH;
+	rect.size = sz;
+
+	for (int pos = 0; pos != MAP_SIZE; ++pos)
+	{
+		EliminateSprite* p = map[pos];
+		if (p)
+		{
+			rect.origin.x = p->getPositionX() - (SPRITE_WIDTH / 2);
+			rect.origin.y = p->getPositionY() - (SPRITE_WIDTH / 2);
+			if (rect.containsPoint(*point))
+				return pos;
+		}
+	}
+
+	return -1;
+}
+
+
+
+void SpriteMap::swap(int staPosition, int endPosition)
+{
+	if (staPosition < 0 || endPosition < 0)
+		return;
+
+	int dis = std::abs(staPosition - endPosition);
+
+	if (dis != 1 && dis != 8)
+		return;
+	isAction = true;
+
+	float time = 0.2;
+	auto staPtr = map[staPosition];
+	auto endPtr = map[endPosition];
+	auto toSta = cocos2d::MoveTo::create(time, staPtr->getPosition());
+	auto toEnd = cocos2d::MoveTo::create(time, endPtr->getPosition());
+
+	remove(staPosition);
+	remove(endPosition);
+	add(staPosition, endPtr);
+	add(endPosition, staPtr);
+
+	if (eliminateMap())
+	{
+		staPtr->runAction(toEnd->clone());
+		endPtr->runAction(toSta->clone());
+
+	}
+	else
+	{
+		remove(staPosition);
+		remove(endPosition);
+		add(staPosition, staPtr);
+		add(endPosition, endPtr);
+		staPtr->runAction(cocos2d::Sequence::create(toEnd->clone(), toSta->clone(), nullptr));
+		endPtr->runAction(cocos2d::Sequence::create(toSta->clone(), toEnd->clone(), nullptr));
+	}
+}
+
+unsigned long long SpriteMap::eliminateMap()
+{
+	unsigned long long needEliminate = 0ULL;
+	for (auto i : normalMap)
+	{
+		unsigned long long tmp = i;
+		tmp &= tmp << COLS;
+		tmp &= tmp >> COLS;
+		tmp |= tmp << COLS;
+		tmp |= tmp >> COLS;
+		needEliminate |= tmp;
+
+		tmp = i;
+		tmp &= (tmp << 1) & 0xfefefefefefefefe;
+		tmp &= (tmp >> 1) & 0x7f7f7f7f7f7f7f7f;
+		tmp |= tmp << 1;
+		tmp |= tmp >> 1;
+		needEliminate |= tmp;
+	}
+	return needEliminate;
 }

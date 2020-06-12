@@ -16,20 +16,29 @@ bool SelectScene::init()
 		return false;
 	}
 
-	auto sprite = Sprite::create("scene_sta.png");
+	auto sprite = Sprite::create("background_gamescene.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
 	this->addChild(sprite, 0);
 
 	Vector<MenuItem*> MenuItems;
 
-	auto ZenItem = MenuItemImage::create("btn_back01.png", "btn_back02.png",
+	auto ZenItem = MenuItemImage::create("Buttons/zen.png", "Buttons/zen_clicked.png",
 		[&](Ref* sender)
-	{
-		auto scene = GameScene::createScene();
-		Director::getInstance()->replaceScene(scene);
-	});
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(scene);
+		});
 	ZenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 6));
 	MenuItems.pushBack(ZenItem);
+
+	auto GenItem = MenuItemImage::create("Buttons/general.png", "Buttons/general_clicked.png",
+		[&](Ref* sender)
+		{
+			auto scene = GameScene::createScene();
+			Director::getInstance()->replaceScene(scene);
+		});
+	GenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 4));
+	MenuItems.pushBack(GenItem);
 
 	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);

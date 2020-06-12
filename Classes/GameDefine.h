@@ -1,3 +1,4 @@
+
 #ifndef  _Inkmoo_Elimination_h_
 #define  _Inkmoo_Elimination_h_
 
@@ -14,13 +15,22 @@
 
 #define MAP_SIZE 64
 
-static const char *spriteNormal[TOTAL_SPRITE] = 
+#define TAG_LAYER_SCORE 10
+
+#include "SimpleAudioEngine.h"
+
+#define SOUND_KEY "sound_key"
+#define MUSIc_KEY "music_key"
+
+
+
+static const char* spriteNormal[TOTAL_SPRITE] =
 {
-	"icon1.png",
-	"icon2.png",
-	"icon3.png",
-	"icon4.png",
-	"icon5.png",
-	"icon6.png"
+	"Croissant.png",
+	"Cupcake.png",
+	"Danish.png",
+	"Macaroon.png",
+	"SugarCookie.png",
+	"Donut.png"
 };
 #endif
