@@ -20,9 +20,14 @@
 #include "SimpleAudioEngine.h"
 
 #define SOUND_KEY "sound_key"
-#define MUSIc_KEY "music_key"
+#define MUSIC_KEY "music_key"
 
+static bool isBackgroundMusicPlay  = true;
+static bool isEffectsPause = false;
 
+#define DISPLAY_TIME_SPLASH_SCENE 2.0
+
+#define TRANSITION_TIME 0.5
 
 static const char* spriteNormal[TOTAL_SPRITE] =
 {
