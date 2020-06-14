@@ -3,14 +3,39 @@
 
 #include "cocos2d.h"
 
-class Settings : public cocos2d::Scene
-{
+#include "ui/CocosGUI.h"
+
+#include "SimpleAudioEngine.h"
+
+USING_NS_CC;
+
+using namespace ui;
+
+using namespace CocosDenshion;
+
+class Settings :public Layer {
+
 public:
-	static cocos2d::Scene* createScene();
 
-	virtual bool init();
+    static Scene* createScene();
 
-	CREATE_FUNC(Settings);
+    virtual bool init();
+
+    void Settings::menuMusicCallback(cocos2d::Ref* pSender);
+
+    void menuCallBack();
+
+    void createSliderBackground();
+
+    void SliderCallBackBackground(Ref* pSender, Slider::EventType type);
+
+    void createSliderEffects();
+
+    void SliderCallBackEffects(Ref* pSender, Slider::EventType type);
+
+    CREATE_FUNC(Settings);
+
 };
+
 
 #endif

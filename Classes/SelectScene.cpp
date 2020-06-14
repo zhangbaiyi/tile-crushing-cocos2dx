@@ -1,6 +1,7 @@
 #include "SelectScene.h"
 #include "GameScene.h"
 #include "GameDefine.h"
+#include "StartScene.h"
 
 USING_NS_CC;
 
@@ -28,7 +29,7 @@ bool SelectScene::init()
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
-	ZenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 6));
+	ZenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 4 + ZenItem->getContentSize().height));
 	MenuItems.pushBack(ZenItem);
 
 	auto GenItem = MenuItemImage::create("Buttons/general.png", "Buttons/general_clicked.png",
@@ -37,8 +38,17 @@ bool SelectScene::init()
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
-	GenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 4));
+	GenItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 - GenItem->getContentSize().height / 2));
 	MenuItems.pushBack(GenItem);
+
+	auto backToMenuItem = MenuItemImage::create("Buttons/back_to_menu.png", "Buttons/back_to_menu_clicked.png",
+		[&](Ref* sender)
+		{
+			auto scene = StartScene::createScene();
+			Director::getInstance()->replaceScene(scene);
+		});
+	backToMenuItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 6 - backToMenuItem->getContentSize().height/2));
+	MenuItems.pushBack(backToMenuItem);
 
 	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);

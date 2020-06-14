@@ -2,8 +2,10 @@
 #include "PauseScene.h"
 #include "EliminateSprite.h"
 #include "GameDefine.h"
+#include "SimpleAudioEngine.h"
 
 USING_NS_CC;
+using namespace CocosDenshion;
 
 Scene* GameScene::createScene()
 {
@@ -23,16 +25,24 @@ bool GameScene::init()
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
 	this->addChild(sprite, -1);
 
+	Vector<MenuItem*> MenuItems;
 	auto pauseItem = MenuItemImage::create("buttons/pause.png", "buttons/pause_clicked.png",
-		[&](Ref* sender)
+		[this](Ref* sender)
 	{
-		auto scene = PauseScene::createScene();
-		Director::getInstance()->pushScene(scene);
+	
+			RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
+			renderTexture->begin();
+			this->getParent()->visit();
+			renderTexture->end();
+			Director::getInstance()->pushScene(PauseScene::createScene(renderTexture, true));
 	});
-	pauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pauseItem->getContentSize().width / 2, 
-		pauseItem->getContentSize().height / 2));
+	pauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pauseItem->getContentSize().width / 2,
+		pauseItem->getContentSize().height / 2)); 
+	MenuItems.pushBack(pauseItem);
 
-	auto menu = Menu::create(pauseItem, NULL);
+
+
+	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);
 	this->addChild(menu, 1);
 
@@ -49,6 +59,7 @@ bool GameScene::init()
 
 	return true;
 }
+
 
 
 void GameScene::initMap() 

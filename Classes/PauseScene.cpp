@@ -8,6 +8,22 @@ Scene* PauseScene::createScene()
 	return PauseScene::create();
 }
 
+Scene* PauseScene::createScene(RenderTexture* screenShot, bool isFlip)
+{
+	Layer* p_scene = Layer::create();
+	Sprite* _screenShot = Sprite::createWithTexture(screenShot->getSprite()->getTexture());
+	_screenShot->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
+	_screenShot->setFlippedY(isFlip);
+	_screenShot->setColor(Color3B::GRAY);
+	p_scene->addChild(_screenShot);
+
+	PauseScene* pScene = PauseScene::create();
+	pScene->addChild(p_scene);
+
+	return pScene;
+
+}
+
 bool PauseScene::init()
 {
 	if (!Scene::init())

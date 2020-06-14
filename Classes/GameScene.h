@@ -5,6 +5,7 @@
 #include "SpriteMap.h"
 #include "GameArg.h"
 
+
 USING_NS_CC;
 
 class GameScene : public Scene
@@ -27,7 +28,6 @@ public:
 
 	bool onTouchBegan(Touch* touch, Event* unused);
 	void onTouchMoved(Touch* touch, Event* unused);
-
 
 	CREATE_FUNC(GameScene);
 private:

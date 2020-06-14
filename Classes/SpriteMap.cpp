@@ -69,7 +69,24 @@ void SpriteMap::explode(EliminateSprite* p)
 		cocos2d::ScaleTo::create(0.2f, 0.0),
 		cocos2d::CallFunc::create(CC_CALLBACK_0(cocos2d::Sprite::removeFromParent, p)),
 		NULL));
-	CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.wav");
+	if (!isEffectsPause)
+	{
+		float randomEffect = CCRANDOM_0_1();
+		if (randomEffect < 0.3f)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.mp3");
+			float volume = CocosDenshion::SimpleAudioEngine::getInstance()->getEffectsVolume();
+			CCLOG("%f", volume);
+		}
+		else if (randomEffect >= 0.3f && randomEffect < 0.6f)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Scrape.mp3");
+		}
+		else
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Drip.mp3");
+		}
+	}
 }
 
 std::vector<int> SpriteMap::fill()
@@ -92,7 +109,7 @@ std::vector<int> SpriteMap::fill()
 				float speed = (p->getPosition().y - endPosition.y) / GAME_SCREEN_HEIGHT * 3;
 				p->stopAllActions();
 				p->runAction(cocos2d::MoveTo::create(speed, endPosition));
-				CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.wav");
+
 			}
 		}
 
@@ -186,7 +203,12 @@ void SpriteMap::swap(int staPosition, int endPosition)
 		add(endPosition, endPtr);
 		staPtr->runAction(cocos2d::Sequence::create(toEnd->clone(), toSta->clone(), nullptr));
 		endPtr->runAction(cocos2d::Sequence::create(toSta->clone(), toEnd->clone(), nullptr));
+		if (!isEffectsPause)
+		{
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.mp3");
+		}
 	}
+	
 }
 
 unsigned long long SpriteMap::eliminateMap()
