@@ -26,20 +26,15 @@ bool GameScene::init()
 	this->addChild(sprite, -1);
 
 	Vector<MenuItem*> MenuItems;
-	auto pauseItem = MenuItemImage::create("buttons/pause.png", "buttons/pause_clicked.png",
-		[this](Ref* sender)
+	MenuItemImage *pPauseItem = MenuItemImage::create("buttons/pause.png", "buttons/pause_clicked.png",
+	[&](Ref* sender)
 	{
-	
-			RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
-			renderTexture->begin();
-			this->getParent()->visit();
-			renderTexture->end();
-			Director::getInstance()->pushScene(PauseScene::createScene(renderTexture, true));
+			GameScene::menuPauseCallback(sender);
 	});
-	pauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pauseItem->getContentSize().width / 2,
-		pauseItem->getContentSize().height / 2)); 
-	MenuItems.pushBack(pauseItem);
+	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width / 2,
+		pPauseItem->getContentSize().height / 2));
 
+	MenuItems.pushBack(pPauseItem);
 
 
 	auto menu = Menu::createWithArray(MenuItems);
@@ -125,4 +120,15 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 	auto location = touch->getLocation();
 	auto endPosition = map.spriteOfPoint(&location);
 	map.swap(staPosition, endPosition);
+}
+
+void GameScene::menuPauseCallback(Ref* pSender)
+{
+	RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
+
+	renderTexture->begin();
+	this->visit();
+	renderTexture->end();
+
+	Director::getInstance()->pushScene(PauseScene::scene(renderTexture));
 }

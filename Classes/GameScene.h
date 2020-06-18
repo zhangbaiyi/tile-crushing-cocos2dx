@@ -28,6 +28,8 @@ public:
 
 	bool onTouchBegan(Touch* touch, Event* unused);
 	void onTouchMoved(Touch* touch, Event* unused);
+	void GameScene::menuPauseCallback(Ref* pSender);
+
 
 	CREATE_FUNC(GameScene);
 private:

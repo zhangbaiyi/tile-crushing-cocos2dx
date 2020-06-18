@@ -5,15 +5,25 @@
 
 USING_NS_CC;
 
-class PauseScene : public cocos2d::Scene
+class PauseScene : public cocos2d::Layer
 {
 public:
-	static cocos2d::Scene* createScene();
-	static cocos2d::Scene* PauseScene::createScene(RenderTexture* screenShot, bool isFlip);
+	
+	virtual bool init() ;
+	static cocos2d::Scene* scene(RenderTexture* screenShot);
 
-	virtual bool init();
+	
 
 	CREATE_FUNC(PauseScene);
+	void menuContinueCallback(Ref* psender);
+	void PauseScene::menuRestart(Ref* pSender);
+	void PauseScene::menuBack(Ref* pSender);
+	void PauseScene::menuSettings(Ref* pSender);
+
+
 };
+
+
+
 
 #endif

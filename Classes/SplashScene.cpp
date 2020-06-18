@@ -3,7 +3,7 @@
 
 #include "StartScene.h"
 #include "GameDefine.h"
-#include <cocos\editor-support\cocostudio\SimpleAudioEngine.h>
+#include "SimpleAudioEngine.h"
 
 
 USING_NS_CC;
