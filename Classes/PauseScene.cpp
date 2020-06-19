@@ -42,6 +42,8 @@ bool PauseScene::init()
 		{
 			PauseScene::menuContinueCallback(sender);
 		});
+
+	resumeItem->setScale(0.25);
 	resumeItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
 	MenuItems.pushBack(resumeItem);
 
@@ -50,15 +52,19 @@ bool PauseScene::init()
 		{
 			PauseScene::menuRestart(sender);
 		});
-	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 + restartItem->getContentSize().height*1.5));
+
+	restartItem->setScale(0.25);
+	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 + restartItem->getContentSize().height*0.3 ));
 	MenuItems.pushBack(restartItem);
 
-	MenuItemImage* backItem = MenuItemImage::create("Buttons/back_to_menu.png", "Buttons/back_to_menu_clicked.png",
+	MenuItemImage* backItem = MenuItemImage::create("Buttons/back_to_menu_new.png", "Buttons/back_to_menu_new.png",
 		[&](Ref* sender)
 		{
 			PauseScene::menuBack(sender);
 		});
-	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 - backItem->getContentSize().height * 1.5));
+
+	backItem->setScale(0.20);
+	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 - backItem->getContentSize().height * 0.45 ));
 	MenuItems.pushBack(backItem);
 
 	MenuItemImage* settingsItem = MenuItemImage::create("Buttons/settings.png", "Buttons/settings_clicked.png",
@@ -66,7 +72,9 @@ bool PauseScene::init()
 		{
 			PauseScene::menuSettings(sender);
 		});
-	settingsItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 - settingsItem->getContentSize().height * 3.0 ));
+
+	settingsItem->setScale(0.25);
+	settingsItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 - restartItem->getContentSize().height * 0.3));
 	MenuItems.pushBack(settingsItem);
 
 	auto menu = Menu::createWithArray(MenuItems);

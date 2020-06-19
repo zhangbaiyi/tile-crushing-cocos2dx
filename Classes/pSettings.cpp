@@ -31,16 +31,18 @@ bool pSettings::init()
 
 	Vector<MenuItem*> MenuItems;
 
-	auto restartItem = MenuItemImage::create("Buttons/back.png", "Buttons/back_clicked.png",
+	auto backItem = MenuItemImage::create("Buttons/back.png", "Buttons/back_clicked.png",
 		[&](Ref* sender)
 		{
 			pSettings::menuBack(sender);
 		});
-	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 8));
-	MenuItems.pushBack(restartItem);
+	backItem->setScale(0.25);
+	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 8));
+	MenuItems.pushBack(backItem);
 
 	auto musicOnItem = MenuItemImage::create("Buttons/music_on.png", "Buttons/music_on_clicked.png");
 	auto musicOffItem = MenuItemImage::create("Buttons/music_off.png", "Buttons/music_off_clicked.png");
+
 	auto menuToggleBackground = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
 		if (isBackgroundMusicPlay == true)
 		{
@@ -56,11 +58,13 @@ bool pSettings::init()
 		}
 		}, musicOnItem, musicOffItem, NULL);
 
-	menuToggleBackground->setPosition(GAME_SCREEN_WIDTH / 2 - menuToggleBackground->getContentSize().width, GAME_SCREEN_HEIGHT / 4);
+	menuToggleBackground->setPosition(GAME_SCREEN_WIDTH / 2 , GAME_SCREEN_HEIGHT / 4);
 
 
 	auto effectsOnItem = MenuItemImage::create("Buttons/sound_effects_on.png", "Buttons/sound_effects_on_clicked.png");
 	auto effectsOffItem = MenuItemImage::create("Buttons/sound_effects_off.png", "Buttons/sound_effects_off_clicked.png");
+
+
 	auto menuToggleEffects = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
 		if (isEffectsPause == false)
 		{
@@ -77,7 +81,7 @@ bool pSettings::init()
 			CCLOG("RESUMED EFFECTS");
 		}
 		}, effectsOnItem, effectsOffItem, NULL);
-	menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2 - menuToggleBackground->getContentSize().width, GAME_SCREEN_HEIGHT / 2);
+	menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2 , GAME_SCREEN_HEIGHT / 2);
 
 	MenuItems.pushBack(menuToggleBackground);
 

@@ -39,6 +39,14 @@ bool SplashScene::init()
     CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("Sounds/Scrape.mp3");
     CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Sounds/Mining by Moonlight.mp3");
 
+    CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0);
+    soundIDChomp = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.mp3");
+    soundIDDrip = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Drip.mp3");
+    soundIDError = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.mp3");
+    soundIDKaChing = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Ka-Ching.mp3");
+    soundIDScrape = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Scrape.mp3");
+
+    CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0.5f);
 
     CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sounds/Mining by Moonlight.mp3");
     isBackgroundMusicPlay = true;

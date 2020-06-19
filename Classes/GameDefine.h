@@ -25,6 +25,15 @@
 static bool isBackgroundMusicPlay  = true;
 static bool isEffectsPause = false;
 
+static unsigned int soundIDChomp;
+static unsigned int soundIDDrip;
+static unsigned int soundIDError;
+static unsigned int soundIDKaChing;
+static unsigned int soundIDScrape;
+static unsigned int soundIDBGM;
+
+
+
 #define DISPLAY_TIME_SPLASH_SCENE 2.0
 
 #define TRANSITION_TIME 0.5

@@ -31,8 +31,9 @@ bool GameScene::init()
 	{
 			GameScene::menuPauseCallback(sender);
 	});
-	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width / 2,
-		pPauseItem->getContentSize().height / 2));
+	pPauseItem->setScale(0.20);
+	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width/2*0.1 -50,
+		pPauseItem->getContentSize().height / 2*0.2 +50));
 
 	MenuItems.pushBack(pPauseItem);
 

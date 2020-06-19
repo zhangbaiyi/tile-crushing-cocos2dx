@@ -42,6 +42,7 @@ bool Settings::init()
 	
 	auto musicOnItem = MenuItemImage::create("Buttons/music_on.png", "Buttons/music_on_clicked.png");
 	auto musicOffItem = MenuItemImage::create("Buttons/music_off.png", "Buttons/music_off_clicked.png");
+
 	auto menuToggleBackground = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
 		if (isBackgroundMusicPlay == true)
 		{
@@ -62,23 +63,9 @@ bool Settings::init()
 
 	auto effectsOnItem = MenuItemImage::create("Buttons/sound_effects_on.png", "Buttons/sound_effects_on_clicked.png");
 	auto effectsOffItem = MenuItemImage::create("Buttons/sound_effects_off.png", "Buttons/sound_effects_off_clicked.png");
-	auto menuToggleEffects = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
-		if (isEffectsPause == false)
-		{
-			
-			isEffectsPause = true;
-			SimpleAudioEngine::getInstance()->pauseAllEffects();
-			CCLOG("PAUSED EFFECTS");
-		}
-		else
-		{
-			
-			isEffectsPause = false;
-			SimpleAudioEngine::getInstance()->resumeAllEffects();
-			CCLOG("RESUMED EFFECTS");
-		}
-		}, effectsOnItem, effectsOffItem, NULL);
+	auto menuToggleEffects = MenuItemToggle::createWithCallback(CC_CALLBACK_1(Settings::menuEffectsCallback, this) , effectsOnItem, effectsOffItem, NULL);
 	menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2 - menuToggleBackground->getContentSize().width, GAME_SCREEN_HEIGHT / 2);
+
 
 	MenuItems.pushBack(menuToggleBackground);
 
@@ -113,13 +100,7 @@ void Settings::createSliderBackground() {
 void Settings::SliderCallBackBackground(Ref* pSender, Slider::EventType type) {
 	auto item = (Slider*)(pSender);
 	log("%i", item->getPercent());
-	//if (item->getPercent() == 100) {
-	//	item->setEnabled(false);
-	//}
-	//else
-	//{
 		SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(item->getPercent() / 100.0f);
-	//}
 }
 
 void Settings::createSliderEffects() {
@@ -139,17 +120,35 @@ void Settings::createSliderEffects() {
 void Settings::SliderCallBackEffects(Ref* pSender, Slider::EventType type) {
 	auto item = (Slider*)(pSender);
 	log("%i", item->getPercent());
-	//if (item->getPercent() == 100) {
-	//	item->setEnabled(false);
-	//}
-	//else
-	//{
 		SimpleAudioEngine::getInstance()->setEffectsVolume(item->getPercent() / 100.0f);
-	//}
 }
 
 void Settings::menuCallBack() {
 	auto scene = StartScene::createScene();
 	auto transition = TransitionSlideInT::create(TRANSITION_TIME, scene);
 	Director::getInstance()->replaceScene(transition);
+}
+
+void Settings::menuEffectsCallback(cocos2d::Ref* pSender) {
+
+	auto item = (MenuItemToggle*)pSender;
+
+	if (!((item->getSelectedIndex() == 0 )&& isEffectsPause == false))
+	{
+			isEffectsPause = true;
+			SimpleAudioEngine::getInstance()->pauseEffect(soundIDChomp);
+			SimpleAudioEngine::getInstance()->pauseEffect(soundIDDrip);
+			SimpleAudioEngine::getInstance()->pauseEffect(soundIDError);
+			SimpleAudioEngine::getInstance()->pauseEffect(soundIDKaChing);
+			SimpleAudioEngine::getInstance()->pauseEffect(soundIDScrape);
+			CCLOG("PAUSED EFFECTS");
+		
+	}
+	else {
+
+			isEffectsPause = false;
+			SimpleAudioEngine::getInstance()->resumeAllEffects();
+			CCLOG("RESUMED EFFECTS");
+	}
+
 }

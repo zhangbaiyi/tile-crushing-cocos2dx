@@ -23,13 +23,16 @@ bool StartScene::init()
 
 	Vector<MenuItem*> MenuItems;
 
-	auto selectItem = MenuItemImage::create("Buttons/Start_Button.png", "Buttons/Start_Button_Clicked.png",
+
+
+	auto selectItem = MenuItemImage::create("Buttons/start.png", "Buttons/start_clicked.png",
 		[&](Ref* sender)
 		{
 			auto scene = SelectScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
-	selectItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 6));
+	selectItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2 , GAME_SCREEN_HEIGHT / 4));
+	selectItem->setScale(0.4);
 	MenuItems.pushBack(selectItem);
 
 	auto settingsItem = MenuItemImage::create("Buttons/settings.png", "Buttons/settings_clicked.png",
@@ -38,9 +41,19 @@ bool StartScene::init()
 			auto scene = Settings::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
-	settingsItem->setScale(0.5f);
-	settingsItem->setPosition(Vec2(settingsItem->getContentSize().width/2, GAME_SCREEN_HEIGHT - settingsItem->getContentSize().height / 2));
+	settingsItem->setScale(0.2);
+	settingsItem->setPosition(Vec2(GAME_SCREEN_WIDTH/2 - settingsItem->getContentSize().width*0.28, GAME_SCREEN_HEIGHT/6 ));
 	MenuItems.pushBack(settingsItem);
+
+	auto rankItem = MenuItemImage::create("Buttons/rank_new.png", "Buttons/rank_new.png",
+		[&](Ref* sender)
+		{
+			auto scene = SelectScene::createScene();
+			Director::getInstance()->replaceScene(scene);
+		});
+	rankItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2 + rankItem->getContentSize().width * 0.20, GAME_SCREEN_HEIGHT / 6));
+	rankItem->setScale(0.20);
+	MenuItems.pushBack(rankItem);
 
 	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);
