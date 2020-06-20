@@ -22,15 +22,7 @@
 #define SOUND_KEY "sound_key"
 #define MUSIC_KEY "music_key"
 
-static bool isBackgroundMusicPlay  = true;
-static bool isEffectsPause = false;
 
-static unsigned int soundIDChomp;
-static unsigned int soundIDDrip;
-static unsigned int soundIDError;
-static unsigned int soundIDKaChing;
-static unsigned int soundIDScrape;
-static unsigned int soundIDBGM;
 
 
 

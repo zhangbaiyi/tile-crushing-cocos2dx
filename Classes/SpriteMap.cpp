@@ -3,7 +3,7 @@
 #include "GameArg.h"
 #include "cocos2d.h"
 
-
+USING_NS_CC;
 
 
 void SpriteMap::add(int pos, EliminateSprite* ptr)
@@ -69,22 +69,22 @@ void SpriteMap::explode(EliminateSprite* p)
 		cocos2d::ScaleTo::create(0.2f, 0.0),
 		cocos2d::CallFunc::create(CC_CALLBACK_0(cocos2d::Sprite::removeFromParent, p)),
 		NULL));
-	if (!isEffectsPause)
+	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
 	{
 		float randomEffect = CCRANDOM_0_1();
 		if (randomEffect < 0.3f)
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.mp3");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.mp3",false);
 			float volume = CocosDenshion::SimpleAudioEngine::getInstance()->getEffectsVolume();
 			CCLOG("%f", volume);
 		}
 		else if (randomEffect >= 0.3f && randomEffect < 0.6f)
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Scrape.mp3");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Scrape.mp3",false);
 		}
 		else
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Drip.mp3");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Drip.mp3",false);
 		}
 	}
 }
@@ -203,9 +203,9 @@ void SpriteMap::swap(int staPosition, int endPosition)
 		add(endPosition, endPtr);
 		staPtr->runAction(cocos2d::Sequence::create(toEnd->clone(), toSta->clone(), nullptr));
 		endPtr->runAction(cocos2d::Sequence::create(toSta->clone(), toEnd->clone(), nullptr));
-		if (!isEffectsPause)
+		if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY))
 		{
-			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.mp3");
+			CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.mp3",false);
 		}
 	}
 	

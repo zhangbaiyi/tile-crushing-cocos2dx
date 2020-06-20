@@ -39,19 +39,16 @@ bool SplashScene::init()
     CocosDenshion::SimpleAudioEngine::getInstance()->preloadEffect("Sounds/Scrape.mp3");
     CocosDenshion::SimpleAudioEngine::getInstance()->preloadBackgroundMusic("Sounds/Mining by Moonlight.mp3");
 
-    CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0);
-    soundIDChomp = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Chomp.mp3");
-    soundIDDrip = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Drip.mp3");
-    soundIDError = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Error.mp3");
-    soundIDKaChing = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Ka-Ching.mp3");
-    soundIDScrape = CocosDenshion::SimpleAudioEngine::getInstance()->playEffect("Sounds/Scrape.mp3");
-
-    CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0.5f);
-
-    CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sounds/Mining by Moonlight.mp3");
-    isBackgroundMusicPlay = true;
-    isEffectsPause = false;
-
+    UserDefault::getInstance()->setBoolForKey(MUSIC_KEY, 1);
+    UserDefault::getInstance()->setBoolForKey(SOUND_KEY, 1);
+    
+    log("%f", CocosDenshion::SimpleAudioEngine::getInstance()->getBackgroundMusicVolume());
+    if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY)==1)
+    {
+        CocosDenshion::SimpleAudioEngine::getInstance()->playBackgroundMusic("Sounds/Mining by Moonlight.mp3");
+    }
+    CocosDenshion::SimpleAudioEngine::getInstance()->setEffectsVolume(0.5);
+    CocosDenshion::SimpleAudioEngine::getInstance()->setBackgroundMusicVolume(0.5);
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -61,7 +58,7 @@ bool SplashScene::init()
     backgroundSprite->setPosition(Point(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
     this->addChild(backgroundSprite);
 
-    auto creditLabel = Label::createWithTTF("XXX XXXX", "fonts/Marker Felt.ttf", 30);
+    auto creditLabel = Label::createWithTTF("GitHub @Xuwangzilu @zhangbaiyi", "fonts/Marker Felt.ttf", 30);
     creditLabel->setPosition(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2);
     this->addChild(creditLabel);
 

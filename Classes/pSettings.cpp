@@ -36,56 +36,107 @@ bool pSettings::init()
 		{
 			pSettings::menuBack(sender);
 		});
-	backItem->setScale(0.25);
+	backItem->setScale(0.15);
 	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 8));
 	MenuItems.pushBack(backItem);
+
 
 	auto musicOnItem = MenuItemImage::create("Buttons/music_on.png", "Buttons/music_on_clicked.png");
 	auto musicOffItem = MenuItemImage::create("Buttons/music_off.png", "Buttons/music_off_clicked.png");
 
-	auto menuToggleBackground = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
-		if (isBackgroundMusicPlay == true)
-		{
-			SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
-			isBackgroundMusicPlay = false;
-			CCLOG("PAUSED");
-		}
-		else
-		{
-			SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
-			isBackgroundMusicPlay = true;
-			CCLOG("RESUMED");
-		}
-		}, musicOnItem, musicOffItem, NULL);
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY) == true)
+	{
+		log(MUSIC_KEY);
+	}
+	else { log("MUSIC_KEY FALSE"); }
 
-	menuToggleBackground->setPosition(GAME_SCREEN_WIDTH / 2 , GAME_SCREEN_HEIGHT / 4);
+	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY) == true)
+	{
+		log(SOUND_KEY);
+	}
+	else { log("SOUND_KEY FALSE"); }
 
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY) == true)
+	{
+		auto menuToggleBackground = MenuItemToggle::createWithCallback([](Ref* pSender) {   // lambda exp here is yet to study
+			auto item = (MenuItemToggle*)pSender;
 
+			if (item->getSelectedIndex() == 1) {
+				UserDefault::getInstance()->setBoolForKey(MUSIC_KEY, false);
+				SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+			}
+			else {
+				SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+				UserDefault::getInstance()->setBoolForKey(MUSIC_KEY, true);
+			}
+
+			}, musicOnItem, musicOffItem, NULL);
+
+		menuToggleBackground->setPosition(GAME_SCREEN_WIDTH / 2-50, GAME_SCREEN_HEIGHT / 4);
+		MenuItems.pushBack(menuToggleBackground);
+	}
+
+	if (UserDefault::getInstance()->getBoolForKey(MUSIC_KEY) == false)
+	{
+		auto menuToggleBackground = MenuItemToggle::createWithCallback([](Ref* pSender) {   // lambda exp here is yet to study
+			auto item = (MenuItemToggle*)pSender;
+
+			if (item->getSelectedIndex() == 1) {
+				UserDefault::getInstance()->setBoolForKey(MUSIC_KEY, true);
+				SimpleAudioEngine::getInstance()->resumeBackgroundMusic();
+			}
+			else {
+				SimpleAudioEngine::getInstance()->pauseBackgroundMusic();
+				UserDefault::getInstance()->setBoolForKey(MUSIC_KEY, false);
+			}
+
+			}, musicOffItem, musicOnItem, NULL);
+
+		menuToggleBackground->setPosition(GAME_SCREEN_WIDTH / 2-50, GAME_SCREEN_HEIGHT / 4);
+		MenuItems.pushBack(menuToggleBackground);
+	}
 	auto effectsOnItem = MenuItemImage::create("Buttons/sound_effects_on.png", "Buttons/sound_effects_on_clicked.png");
 	auto effectsOffItem = MenuItemImage::create("Buttons/sound_effects_off.png", "Buttons/sound_effects_off_clicked.png");
 
+	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY) == true)
+	{
 
-	auto menuToggleEffects = MenuItemToggle::createWithCallback([](Ref* obj) {   // lambda exp here is yet to study
-		if (isEffectsPause == false)
-		{
+		auto menuToggleEffects = MenuItemToggle::createWithCallback([](Ref* pSender) {   // lambda exp here is yet to study
+			auto item = (MenuItemToggle*)pSender;
+			log("toggle item %d", item->getSelectedIndex());
 
-			isEffectsPause = true;
-			SimpleAudioEngine::getInstance()->pauseAllEffects();
-			CCLOG("PAUSED EFFECTS");
-		}
-		else
-		{
+			if (item->getSelectedIndex() == 1) {
+				UserDefault::getInstance()->setBoolForKey(SOUND_KEY, false);
+			}
+			else {
 
-			isEffectsPause = false;
-			SimpleAudioEngine::getInstance()->resumeAllEffects();
-			CCLOG("RESUMED EFFECTS");
-		}
-		}, effectsOnItem, effectsOffItem, NULL);
-	menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2 , GAME_SCREEN_HEIGHT / 2);
+				UserDefault::getInstance()->setBoolForKey(SOUND_KEY, true);
+			}
 
-	MenuItems.pushBack(menuToggleBackground);
+			}, effectsOnItem, effectsOffItem, NULL);
+		menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2-50, GAME_SCREEN_HEIGHT / 2);
+		MenuItems.pushBack(menuToggleEffects);
+	}
 
-	MenuItems.pushBack(menuToggleEffects);
+	if (UserDefault::getInstance()->getBoolForKey(SOUND_KEY) == false)
+	{
+
+		auto menuToggleEffects = MenuItemToggle::createWithCallback([](Ref* pSender) {   // lambda exp here is yet to study
+			auto item = (MenuItemToggle*)pSender;
+			log("toggle item %d", item->getSelectedIndex());
+
+			if (item->getSelectedIndex() == 1) {
+				UserDefault::getInstance()->setBoolForKey(SOUND_KEY, true);
+			}
+			else {
+
+				UserDefault::getInstance()->setBoolForKey(SOUND_KEY, false);
+			}
+
+			}, effectsOffItem, effectsOnItem, NULL);
+		menuToggleEffects->setPosition(GAME_SCREEN_WIDTH / 2-50, GAME_SCREEN_HEIGHT / 2);
+		MenuItems.pushBack(menuToggleEffects);
+	}
 
 	auto menu = Menu::createWithArray(MenuItems);
 	menu->setPosition(Vec2::ZERO);

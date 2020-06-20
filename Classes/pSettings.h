@@ -21,7 +21,6 @@ public:
 
     virtual bool init();
 
-    void pSettings::menuMusicCallback(cocos2d::Ref* pSender);
 
     void pSettings::menuBack(cocos2d::Ref* pSender);
 

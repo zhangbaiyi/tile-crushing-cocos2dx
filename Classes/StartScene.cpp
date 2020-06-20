@@ -45,7 +45,7 @@ bool StartScene::init()
 	settingsItem->setPosition(Vec2(GAME_SCREEN_WIDTH/2 - settingsItem->getContentSize().width*0.28, GAME_SCREEN_HEIGHT/6 ));
 	MenuItems.pushBack(settingsItem);
 
-	auto rankItem = MenuItemImage::create("Buttons/rank_new.png", "Buttons/rank_new.png",
+	auto rankItem = MenuItemImage::create("Buttons/rank_new.png", "Buttons/rank_new_clicked.png",
 		[&](Ref* sender)
 		{
 			auto scene = SelectScene::createScene();

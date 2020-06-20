@@ -57,7 +57,7 @@ bool PauseScene::init()
 	restartItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2 + restartItem->getContentSize().height*0.3 ));
 	MenuItems.pushBack(restartItem);
 
-	MenuItemImage* backItem = MenuItemImage::create("Buttons/back_to_menu_new.png", "Buttons/back_to_menu_new.png",
+	MenuItemImage* backItem = MenuItemImage::create("Buttons/back_to_menu_new.png", "Buttons/back_to_menu_new_clicked.png",
 		[&](Ref* sender)
 		{
 			PauseScene::menuBack(sender);
