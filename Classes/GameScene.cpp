@@ -3,15 +3,11 @@
 #include "EliminateSprite.h"
 #include "GameDefine.h"
 #include "SimpleAudioEngine.h"
-#include "general_time_up.h"
-#include "TransferScene.h"
-#include "StartScene.h"
 
 USING_NS_CC;
 using namespace CocosDenshion;
 extern int curModel;
-int generalCurScore;
-bool isBreakThrough = false;
+
 Scene* GameScene::createScene()
 {
 	return GameScene::create();
@@ -26,52 +22,32 @@ bool GameScene::init()
 	spriteSheet = SpriteBatchNode::create("icons.png");
 	addChild(spriteSheet, 0);
 
-
-	if (curModel == RLIKE_MODEL||curModel == CONTINUE_MODEL)
-	{
-		auto sprite = Sprite::create("level_gamescene.png");
-		sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
-		this->addChild(sprite, -1);
-	}
-
-	if (curModel == GENERAL_MODEL)
-	{
-		auto sprite = Sprite::create("general_background.png");
-		sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
-		this->addChild(sprite, -1);
-	}
-
-	if(curModel == ZEN_MODEL)
-	{
-		auto sprite = Sprite::create("zen_gamescene.png");
-		sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
-		this->addChild(sprite, -1);
-	}
+	auto sprite = Sprite::create("background_gamescene.png");
+	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
+	this->addChild(sprite, -1);
 
 
 	Vector<MenuItem*> MenuItems;
-	MenuItemImage* pPauseItem = MenuItemImage::create("Buttons/pause.png", "Buttons/pause_clicked.png",
-		[&](Ref* sender)
-		{
-			RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
+	MenuItemImage *pPauseItem = MenuItemImage::create("Buttons/pause.png", "Buttons/pause_clicked.png",
+	[&](Ref* sender)
+	{
+		RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
 
-			renderTexture->begin();
-			this->visit();
-			renderTexture->end();
+		renderTexture->begin();
+		this->visit();
+		renderTexture->end();
 
-			if (map.controller.model() == ZEN_MODEL && map.score() > UserDefault::getInstance()->getIntegerForKey("Zen"))
-				UserDefault::getInstance()->setIntegerForKey("Zen", map.score());
+		if (map.controller.model() == ZEN_MODEL && map.score() > UserDefault::getInstance()->getIntegerForKey("Zen"))
+			UserDefault::getInstance()->setIntegerForKey("Zen", map.score());
 
 
-			Director::getInstance()->pushScene(PauseScene::scene(renderTexture));
-		});
+		Director::getInstance()->pushScene(PauseScene::scene(renderTexture));
+	});
 	pPauseItem->setScale(0.20);
-	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width / 2 * 0.1 - 50,
-		pPauseItem->getContentSize().height / 2 * 0.2 + 50));
+	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width/2*0.1 -50,
+		pPauseItem->getContentSize().height / 2*0.2 +50));
 
 	MenuItems.pushBack(pPauseItem);
-
-
 
 
 	auto menu = Menu::createWithArray(MenuItems);
@@ -83,40 +59,26 @@ bool GameScene::init()
 	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-	if (curModel == ZEN_MODEL)
-	{
+	limit = map.controller.create(curModel);
 
-		auto labelScore = Label::createWithTTF(std::to_string(map.score()), "fonts/Marker Felt.ttf", zen_score_size);
-		labelScore->setPosition(Point(zen_score_width, zen_score_height));
-		labelScore->setTag(12);
-		this->addChild(labelScore);
-	}
-	else {
-	
-		limit = map.controller.create(curModel);
-
-		auto labelLimit = Label::createWithTTF(StringUtils::format("%d", *limit), "fonts/Marker Felt.ttf", left_up_label_size);
-		labelLimit->setPosition(Point(left_up_label_width, left_up_label_height));
-		labelLimit->setTag(11);
-		this->addChild(labelLimit);
-		auto labelScore = Label::createWithTTF(StringUtils::format("%d", map.score()), "fonts/Marker Felt.ttf", right_up_label_size);
-		labelScore->setPosition(Point(right_up_label_width, right_up_label_height));
-		labelScore->setTag(10);
-		this->addChild(labelScore);
-		auto labelAim = Label::createWithTTF(StringUtils::format("%d", map.controller.aim()), "fonts/Marker Felt.ttf", aim_label_size);
-		labelAim->setPosition(Point(aim_label_width, aim_label_height));
-		labelAim->setColor(Color3B::RED);
-
-		this->addChild(labelAim);
-	
-	}
-
+	TTFConfig config("fonts/arial.ttf", 30);
+	auto labelLimit = Label::createWithTTF(config, StringUtils::format("%s: %d ", map.controller.getLimitType(), *limit));
+	labelLimit->setPosition(Vec2(labelLimit->getContentSize().width, GAME_SCREEN_HEIGHT - labelLimit->getContentSize().height));
+	labelLimit->setTag(11);
+	this->addChild(labelLimit);
+	auto labelScore = Label::createWithTTF(config, StringUtils::format("Score: %d ", map.score()));
+	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT - labelScore->getContentSize().height*2.6));
+	labelScore->setTag(10);
+	this->addChild(labelScore);
 	
 	//如果是闯关模式或继续游戏则Highest改为目标分数
-	
+	auto labelAim = Label::createWithTTF(config, StringUtils::format("Highest: %d ", map.controller.aim()));
+	labelAim->setPosition(Vec2(GAME_SCREEN_WIDTH - labelAim->getContentSize().width, GAME_SCREEN_HEIGHT - labelAim->getContentSize().height));
+	this->addChild(labelAim);
+
 	initMap();
 	scheduleUpdate();
-	schedule(CC_SCHEDULE_SELECTOR(GameScene::timeUpdate), 1.0f);
+	schedule(schedule_selector(GameScene::timeUpdate), 1.0f);
 
 	return true;
 }
@@ -154,37 +116,48 @@ void GameScene::update(float t)
 {
 	if (!map.actionJudge())
 		checkSprite();
-
-	if (*limit == 0)
+	if (limit == 0)
 	{
-		if (curModel == GENERAL_MODEL)
-		{
-			generalCurScore = map.score();
+		//结束动画
+		if (map.controller.model() == GENERAL_MODEL && map.score() > UserDefault::getInstance()->getIntegerForKey("General"))
 			UserDefault::getInstance()->setIntegerForKey("General", map.score());
-			auto scene = StartScene::createScene();
-			Director::getInstance()->replaceScene(scene);
-		}
-	
 		if (map.controller.model() == RLIKE_MODEL || map.controller.model() == CONTINUE_MODEL)
 		{
-			if (map.score() < map.controller.aim())
-				isBreakThrough = false;
+			if (map.score() >= map.controller.aim())
+			{
+				int tmp = cocos2d::UserDefault::getInstance()->getIntegerForKey("Level");
+				cocos2d::UserDefault::getInstance()->setIntegerForKey("Level", tmp + LEVEL_CHANGE);
+				
+				srand(static_cast<unsigned>(time(nullptr)));
+				int changeScore = rand() % TOTAL_SPRITE;
+				std::ostringstream buffer;
+				buffer << "Score" << changeScore;
+				tmp = cocos2d::UserDefault::getInstance()->getIntegerForKey(buffer.str().c_str());
+				cocos2d::UserDefault::getInstance()->setIntegerForKey(buffer.str().c_str(), tmp + SCORE_CHANGE);
+				//进入下一关的准备界面
+			}
 			else
-				isBreakThrough = true;
-			auto scene = TransferScene::createScene();
-			Director::getInstance()->replaceScene(scene);
+			{
+				cocos2d::UserDefault::getInstance()->setIntegerForKey("Level", 1);
+				for (int i = 0; i != TOTAL_SPRITE; ++i)
+				{
+					std::ostringstream buffer;
+					buffer << "Score" << i;
+					cocos2d::UserDefault::getInstance()->setIntegerForKey(buffer.str().c_str(), 1);
+				}
+			}
 		}
+		//游戏结束
 	}
 
-	if (limit > 0)
+	if(limit > 0)
 	{
-		Label* labelLimit = (Label*)this->getChildByTag(11);
-		labelLimit->setString(StringUtils::format(" %d ",  *limit));
-		Label* labelScore = (Label*)this->getChildByTag(10);
-		labelScore->setString(StringUtils::format(" %d ", map.score()));
+		Label *labelLimit = (Label *)this->getChildByTag(11);
+		labelLimit->setString(StringUtils::format("%s: %d ", map.controller.getLimitType(), *limit));
+		Label *labelScore = (Label *)this->getChildByTag(10);
+		labelScore->setString(StringUtils::format("Score: %d ", map.score()));
 	}
 }
-
 
 void GameScene::checkSprite()
 {

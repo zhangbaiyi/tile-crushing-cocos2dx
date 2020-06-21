@@ -28,7 +28,6 @@ public:
 	void controllerCreate(int);
 	void timeUpdate(float);
 
-	void level_trans();
 
 	CREATE_FUNC(GameScene);
 private:

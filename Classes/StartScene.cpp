@@ -2,7 +2,6 @@
 #include "SelectScene.h"
 #include "Settings.h"
 #include "GameDefine.h"
-#include "rank.h"
 
 USING_NS_CC;
 
@@ -17,9 +16,6 @@ bool StartScene::init()
 	{
 		return false;
 	}
-
-	UserDefault::getInstance()->setIntegerForKey("Level", 1);
-
 
 	auto sprite = Sprite::create("start_background.png");
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
@@ -52,7 +48,7 @@ bool StartScene::init()
 	auto rankItem = MenuItemImage::create("Buttons/rank_new.png", "Buttons/rank_new_clicked.png",
 		[&](Ref* sender)
 		{
-			auto scene = rank::createScene();
+			auto scene = SelectScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
 	rankItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2 + rankItem->getContentSize().width * 0.20, GAME_SCREEN_HEIGHT / 6));

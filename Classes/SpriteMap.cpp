@@ -264,7 +264,7 @@ void SpriteMap::typeChange(unsigned long long needEliminateCol, unsigned long lo
 		EliminateSprite* spr = map[pos];
 		spr->setType(COL_SPRITE);
 		SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteHighlighted[spr->getImgIndex()]);
-		spr->setSpriteFrame(frame);
+		spr->setDisplayFrame(frame);
 	}
 	while (needEliminateRow)
 	{
@@ -273,6 +273,6 @@ void SpriteMap::typeChange(unsigned long long needEliminateCol, unsigned long lo
 		EliminateSprite* spr = map[pos];
 		spr->setType(ROW_SPRITE);
 		SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteHighlighted[spr->getImgIndex()]);
-		spr->setSpriteFrame(frame);
+		spr->setDisplayFrame(frame);
 	}
 }
