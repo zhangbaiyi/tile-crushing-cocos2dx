@@ -15,10 +15,6 @@ public:
 	
 
 	CREATE_FUNC(PauseScene);
-	void menuContinueCallback(Ref* psender);
-	void PauseScene::menuRestart(Ref* pSender);
-	void PauseScene::menuBack(Ref* pSender);
-	void PauseScene::menuSettings(Ref* pSender);
 
 
 };

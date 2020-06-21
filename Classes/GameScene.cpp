@@ -6,6 +6,7 @@
 
 USING_NS_CC;
 using namespace CocosDenshion;
+extern int curModel;
 
 Scene* GameScene::createScene()
 {
@@ -25,11 +26,22 @@ bool GameScene::init()
 	sprite->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
 	this->addChild(sprite, -1);
 
+
 	Vector<MenuItem*> MenuItems;
-	MenuItemImage *pPauseItem = MenuItemImage::create("buttons/pause.png", "buttons/pause_clicked.png",
+	MenuItemImage *pPauseItem = MenuItemImage::create("Buttons/pause.png", "Buttons/pause_clicked.png",
 	[&](Ref* sender)
 	{
-			GameScene::menuPauseCallback(sender);
+		RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
+
+		renderTexture->begin();
+		this->visit();
+		renderTexture->end();
+
+		if (map.controller.model() == ZEN_MODEL && map.score() > UserDefault::getInstance()->getIntegerForKey("Zen"))
+			UserDefault::getInstance()->setIntegerForKey("Zen", map.score());
+
+
+		Director::getInstance()->pushScene(PauseScene::scene(renderTexture));
 	});
 	pPauseItem->setScale(0.20);
 	pPauseItem->setPosition(Vec2(GAME_SCREEN_WIDTH - pPauseItem->getContentSize().width/2*0.1 -50,
@@ -47,13 +59,33 @@ bool GameScene::init()
 	touchListener->onTouchMoved = CC_CALLBACK_2(GameScene::onTouchMoved, this);
 	_eventDispatcher->addEventListenerWithSceneGraphPriority(touchListener, this);
 
-	auto labelScore = Score::create();
+	limit = map.controller.create(curModel);
+
+	TTFConfig config("fonts/arial.ttf", 30);
+	auto labelLimit = Label::createWithTTF(config, StringUtils::format("%s: %d ", map.controller.getLimitType(), *limit));
+	labelLimit->setPosition(Vec2(labelLimit->getContentSize().width, GAME_SCREEN_HEIGHT - labelLimit->getContentSize().height));
+	labelLimit->setTag(11);
+	this->addChild(labelLimit);
+	auto labelScore = Label::createWithTTF(config, StringUtils::format("Score: %d ", map.score()));
+	labelScore->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT - labelScore->getContentSize().height*2.6));
+	labelScore->setTag(10);
 	this->addChild(labelScore);
+	
+	//如果是闯关模式或继续游戏则Highest改为目标分数
+	auto labelAim = Label::createWithTTF(config, StringUtils::format("Highest: %d ", map.controller.aim()));
+	labelAim->setPosition(Vec2(GAME_SCREEN_WIDTH - labelAim->getContentSize().width, GAME_SCREEN_HEIGHT - labelAim->getContentSize().height));
+	this->addChild(labelAim);
 
 	initMap();
 	scheduleUpdate();
+	schedule(schedule_selector(GameScene::timeUpdate), 1.0f);
 
 	return true;
+}
+
+void GameScene::timeUpdate(float dt)
+{
+	map.controller.timeUpdate();
 }
 
 
@@ -84,6 +116,47 @@ void GameScene::update(float t)
 {
 	if (!map.actionJudge())
 		checkSprite();
+	if (limit == 0)
+	{
+		//结束动画
+		if (map.controller.model() == GENERAL_MODEL && map.score() > UserDefault::getInstance()->getIntegerForKey("General"))
+			UserDefault::getInstance()->setIntegerForKey("General", map.score());
+		if (map.controller.model() == RLIKE_MODEL || map.controller.model() == CONTINUE_MODEL)
+		{
+			if (map.score() >= map.controller.aim())
+			{
+				int tmp = cocos2d::UserDefault::getInstance()->getIntegerForKey("Level");
+				cocos2d::UserDefault::getInstance()->setIntegerForKey("Level", tmp + LEVEL_CHANGE);
+				
+				srand(static_cast<unsigned>(time(nullptr)));
+				int changeScore = rand() % TOTAL_SPRITE;
+				std::ostringstream buffer;
+				buffer << "Score" << changeScore;
+				tmp = cocos2d::UserDefault::getInstance()->getIntegerForKey(buffer.str().c_str());
+				cocos2d::UserDefault::getInstance()->setIntegerForKey(buffer.str().c_str(), tmp + SCORE_CHANGE);
+				//进入下一关的准备界面
+			}
+			else
+			{
+				cocos2d::UserDefault::getInstance()->setIntegerForKey("Level", 1);
+				for (int i = 0; i != TOTAL_SPRITE; ++i)
+				{
+					std::ostringstream buffer;
+					buffer << "Score" << i;
+					cocos2d::UserDefault::getInstance()->setIntegerForKey(buffer.str().c_str(), 1);
+				}
+			}
+		}
+		//游戏结束
+	}
+
+	if(limit > 0)
+	{
+		Label *labelLimit = (Label *)this->getChildByTag(11);
+		labelLimit->setString(StringUtils::format("%s: %d ", map.controller.getLimitType(), *limit));
+		Label *labelScore = (Label *)this->getChildByTag(10);
+		labelScore->setString(StringUtils::format("Score: %d ", map.score()));
+	}
 }
 
 void GameScene::checkSprite()
@@ -121,15 +194,4 @@ void GameScene::onTouchMoved(Touch *touch, Event *unused)
 	auto location = touch->getLocation();
 	auto endPosition = map.spriteOfPoint(&location);
 	map.swap(staPosition, endPosition);
-}
-
-void GameScene::menuPauseCallback(Ref* pSender)
-{
-	RenderTexture* renderTexture = RenderTexture::create(GAME_SCREEN_WIDTH, GAME_SCREEN_HEIGHT);
-
-	renderTexture->begin();
-	this->visit();
-	renderTexture->end();
-
-	Director::getInstance()->pushScene(PauseScene::scene(renderTexture));
 }

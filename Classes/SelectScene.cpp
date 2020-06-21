@@ -5,6 +5,8 @@
 
 USING_NS_CC;
 
+int curModel;
+
 Scene* SelectScene::createScene()
 {
 	return SelectScene::create();
@@ -26,6 +28,7 @@ bool SelectScene::init()
 	auto ZenItem = MenuItemImage::create("Buttons/zen.png", "Buttons/zen_clicked.png",
 		[&](Ref* sender)
 		{
+			curModel = ZEN_MODEL;
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
@@ -35,6 +38,7 @@ bool SelectScene::init()
 	auto GenItem = MenuItemImage::create("Buttons/general.png", "Buttons/general_clicked.png",
 		[&](Ref* sender)
 		{
+			curModel = GENERAL_MODEL;
 			auto scene = GameScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});

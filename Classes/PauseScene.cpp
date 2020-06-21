@@ -13,7 +13,7 @@ Scene* PauseScene::scene(RenderTexture* screenShot)
 	Scene* p_scene = Scene::create();
 	Sprite* _screenShot = Sprite::createWithTexture(screenShot->getSprite()->getTexture());
 	_screenShot->setPosition(Point(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 2));
-	_screenShot->setFlippedY(TRUE);
+	_screenShot->setFlippedY(true);
 	_screenShot->setColor(Color3B::GRAY);
 	p_scene->addChild(_screenShot);
 
@@ -40,7 +40,7 @@ bool PauseScene::init()
 	MenuItemImage* resumeItem = MenuItemImage::create("Buttons/resume.png", "Buttons/resume_clicked.png",
 		[&](Ref* sender)
 		{
-			PauseScene::menuContinueCallback(sender);
+			Director::getInstance()->popScene();
 		});
 
 	resumeItem->setScale(0.25);
@@ -50,7 +50,7 @@ bool PauseScene::init()
 	MenuItemImage* restartItem = MenuItemImage::create("Buttons/restart.png", "Buttons/restart_clicked.png",
 		[&](Ref* sender)
 		{
-			PauseScene::menuRestart(sender);
+			Director::getInstance()->replaceScene(GameScene::createScene());
 		});
 
 	restartItem->setScale(0.25);
@@ -60,7 +60,7 @@ bool PauseScene::init()
 	MenuItemImage* backItem = MenuItemImage::create("Buttons/back_to_menu_new.png", "Buttons/back_to_menu_new_clicked.png",
 		[&](Ref* sender)
 		{
-			PauseScene::menuBack(sender);
+			Director::getInstance()->replaceScene(StartScene::createScene());
 		});
 
 	backItem->setScale(0.20);
@@ -70,7 +70,7 @@ bool PauseScene::init()
 	MenuItemImage* settingsItem = MenuItemImage::create("Buttons/settings.png", "Buttons/settings_clicked.png",
 		[&](Ref* sender)
 		{
-			PauseScene::menuSettings(sender);
+			Director::getInstance()->pushScene(pSettings::createScene());
 		});
 
 	settingsItem->setScale(0.25);
@@ -82,24 +82,4 @@ bool PauseScene::init()
 	this->addChild(menu, 3);
 
 	return true;
-}
-
-void PauseScene::menuContinueCallback(Ref* pSender)
-{
-	Director::getInstance()->popScene();
-}
-
-void PauseScene::menuRestart(Ref* pSender)
-{
-	Director::getInstance()->replaceScene(GameScene::createScene());
-}
-
-void PauseScene::menuBack(Ref* pSender)
-{
-	Director::getInstance()->replaceScene(StartScene::createScene());
-}
-
-void PauseScene::menuSettings(Ref* pSender)
-{
-	Director::getInstance()->pushScene(pSettings::createScene());
 }

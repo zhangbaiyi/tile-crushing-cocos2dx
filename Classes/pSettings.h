@@ -22,7 +22,7 @@ public:
     virtual bool init();
 
 
-    void pSettings::menuBack(cocos2d::Ref* pSender);
+    void menuBack(cocos2d::Ref* pSender);
 
     void createSliderBackground();
 
