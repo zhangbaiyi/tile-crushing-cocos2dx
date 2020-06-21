@@ -36,7 +36,7 @@ bool pSettings::init()
 		{
 			pSettings::menuBack(sender);
 		});
-	backItem->setScale(0.15);
+
 	backItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 8));
 	MenuItems.pushBack(backItem);
 

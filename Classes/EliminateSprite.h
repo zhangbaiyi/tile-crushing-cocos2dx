@@ -11,6 +11,7 @@ public:
 	static EliminateSprite* create();
 
 	CC_SYNTHESIZE(int, m_imgIndex, ImgIndex);
+	CC_SYNTHESIZE(int, m_type, Type);
 };
 
 #endif

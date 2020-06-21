@@ -37,7 +37,6 @@ bool Settings::init()
 			auto scene = StartScene::createScene();
 			Director::getInstance()->replaceScene(scene);
 		});
-	backToMenuItem->setScale(0.15);
 	backToMenuItem->setPosition(Vec2(GAME_SCREEN_WIDTH / 2, GAME_SCREEN_HEIGHT / 8));
 	MenuItems.pushBack(backToMenuItem);
 	

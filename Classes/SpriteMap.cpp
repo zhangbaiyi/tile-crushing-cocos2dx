@@ -1,6 +1,5 @@
 #include "SpriteMap.h"
 #include "GameDefine.h"
-#include "GameArg.h"
 #include "cocos2d.h"
 
 USING_NS_CC;
@@ -47,18 +46,28 @@ bool SpriteMap::check()
 void SpriteMap::eliminate(unsigned long long need)
 {
 	isAction = true;
-	int combo = 1;
+	int totalScore = 0;
 	while (need)
 	{
 		int pos = msb(need);
+		EliminateSprite* spr = map[pos];
 		need ^= 1ULL << pos;
-		EliminateSprite* p = map[pos];
-		remove(pos);
-		explode(p);
-		combo++;
-		total_score += 10 * combo;
-		
+		if (spr)
+		{
+			totalScore += controller.getScore(spr->getImgIndex());
+			remove(pos);
+			if (spr->getType() == ROW_SPRITE)
+			{
+				need |= rowEliminate[pos / ROWS];
+			}
+			if (spr->getType() == COL_SPRITE)
+			{
+				need |= colEliminate[pos % ROWS];
+			}
+			explode(spr);
+		}
 	}
+	myScore += totalScore;
 }
 
 
@@ -193,7 +202,7 @@ void SpriteMap::swap(int staPosition, int endPosition)
 	{
 		staPtr->runAction(toEnd->clone());
 		endPtr->runAction(toSta->clone());
-
+		controller.stepUpdate();
 	}
 	else
 	{
@@ -213,22 +222,57 @@ void SpriteMap::swap(int staPosition, int endPosition)
 
 unsigned long long SpriteMap::eliminateMap()
 {
+	unsigned long long needEliminateRow = 0ULL;
+	unsigned long long needEliminateCol = 0ULL;
 	unsigned long long needEliminate = 0ULL;
 	for (auto i : normalMap)
 	{
 		unsigned long long tmp = i;
 		tmp &= tmp << COLS;
 		tmp &= tmp >> COLS;
-		tmp |= tmp << COLS;
-		tmp |= tmp >> COLS;
-		needEliminate |= tmp;
+		needEliminateCol |= tmp;
 
 		tmp = i;
 		tmp &= (tmp << 1) & 0xfefefefefefefefe;
 		tmp &= (tmp >> 1) & 0x7f7f7f7f7f7f7f7f;
-		tmp |= tmp << 1;
-		tmp |= tmp >> 1;
-		needEliminate |= tmp;
+		needEliminateRow |= tmp;
 	}
+
+	needEliminate |= needEliminateCol | (needEliminateCol << COLS) | (needEliminateCol >> COLS);
+	needEliminate |= needEliminateRow | (needEliminateRow << 1) | (needEliminateRow >> 1);
+	needEliminateCol &= needEliminateCol >> COLS;
+	needEliminateCol ^= (needEliminateCol << COLS) & needEliminateCol;
+	needEliminateRow &= needEliminateRow >> 1;
+	needEliminateRow ^= (needEliminateRow << 1) & needEliminateRow;
+	needEliminate ^= (needEliminateCol | needEliminateRow);
+	typeChange(needEliminateCol, needEliminateRow);
+	
 	return needEliminate;
+}
+
+int SpriteMap::score()
+{
+	return myScore;
+}
+
+void SpriteMap::typeChange(unsigned long long needEliminateCol, unsigned long long needEliminateRow)
+{
+	while (needEliminateCol)
+	{
+		int pos = msb(needEliminateCol);
+		needEliminateCol ^= 1ULL << pos;
+		EliminateSprite* spr = map[pos];
+		spr->setType(COL_SPRITE);
+		SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteHighlighted[spr->getImgIndex()]);
+		spr->setSpriteFrame(frame);
+	}
+	while (needEliminateRow)
+	{
+		int pos = msb(needEliminateRow);
+		needEliminateRow ^= 1ULL << pos;
+		EliminateSprite* spr = map[pos];
+		spr->setType(ROW_SPRITE);
+		SpriteFrame *frame = SpriteFrameCache::getInstance()->getSpriteFrameByName(spriteHighlighted[spr->getImgIndex()]);
+		spr->setSpriteFrame(frame);
+	}
 }

@@ -3,7 +3,6 @@
 
 #include "cocos2d.h"
 #include "SpriteMap.h"
-#include "GameArg.h"
 
 
 USING_NS_CC;
@@ -16,11 +15,8 @@ public:
 	virtual bool init();
 
 	void initMap();
-	void intScore();
 
 	void createSprite(int pos);
-
-	Point positionOfItem(int row, int col);
 
 	void update(float t);
 
@@ -28,8 +24,11 @@ public:
 
 	bool onTouchBegan(Touch* touch, Event* unused);
 	void onTouchMoved(Touch* touch, Event* unused);
-	void GameScene::menuPauseCallback(Ref* pSender);
 
+	void controllerCreate(int);
+	void timeUpdate(float);
+
+	void level_trans();
 
 	CREATE_FUNC(GameScene);
 private:
@@ -37,6 +36,7 @@ private:
 
 	SpriteMap map;
 
+	const int* limit;
 
 	int staPosition = -1;
 };
